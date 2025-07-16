@@ -162,4 +162,58 @@ const getUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "User fetched successfully", req.user));
 });
 
-export { registerUser, loginUser, logOutUser, getUser };
+const updateUserDetails = asyncHandler(async (req, res) => {
+  const { username, email } = req.body;
+
+  if (!username || !email) {
+    throw new ApiError(400, "Email and username is required.");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        username: username,
+        email: email,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Account details upadted successfully", user));
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.files?.avatar?.[0].path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar file is required.");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Avatar updated Successfully.", user));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logOutUser,
+  getUser,
+  updateUserDetails,
+  updateUserAvatar,
+};
