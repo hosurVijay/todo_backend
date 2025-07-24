@@ -15,4 +15,12 @@ app.use(express.urlencoded({ limit: "16kb", extended: true }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+// Todo routes
+import todoRoutes from "./Routes/todo.routes.js";
+app.use("/api/v1/todo", todoRoutes);
+
+// User routes
+import userRoutes from "./Routes/user.todo.js";
+app.use("/api/v1/user", userRoutes);
+
 export { app };

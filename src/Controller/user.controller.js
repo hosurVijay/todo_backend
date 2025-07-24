@@ -3,6 +3,7 @@ import { ApiError } from "../Utills/apiError.js";
 import { ApiResponse } from "../Utills/apiResponse.js";
 import { User } from "../Models/user.model.js";
 import uploadOnCloudinary from "../Utills/cloudinary.js";
+import { use } from "react";
 
 const generateAccessRefreshToken = async (userID) => {
   try {
@@ -208,6 +209,20 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Avatar updated Successfully.", user));
 });
+const changeUserPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid Old Password!");
+  }
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Password Successfully updated.", {}));
+});
 
 export {
   registerUser,
@@ -216,4 +231,5 @@ export {
   getUser,
   updateUserDetails,
   updateUserAvatar,
+  changeUserPassword,
 };
