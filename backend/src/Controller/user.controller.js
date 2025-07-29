@@ -23,10 +23,12 @@ const generateAccessRefreshToken = async (userID) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { username, password, fullname, email } = req.body;
+  const { username, password, fullname, email, confirmPassword } = req.body;
 
   if (
-    [username, fullname, password, email].some((field) => field?.trim() === "")
+    [username, fullname, password, email, confirmPassword].some(
+      (field) => field?.trim() === ""
+    )
   ) {
     throw new ApiError(400, "All fields are required.");
   }
@@ -36,6 +38,9 @@ const registerUser = asyncHandler(async (req, res) => {
   });
   if (existedUser) {
     throw new ApiError(400, "User already exist.");
+  }
+  if (password !== confirmPassword) {
+    throw new ApiError(400, "Password and Confirm password does't match.");
   }
 
   const avatarLocalpath = req.files?.avatar[0]?.path;
