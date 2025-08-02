@@ -3,7 +3,6 @@ import { ApiError } from "../Utills/apiError.js";
 import { ApiResponse } from "../Utills/apiResponse.js";
 import { User } from "../Models/user.model.js";
 import uploadOnCloudinary from "../Utills/cloudinary.js";
-import { use } from "react";
 
 const generateAccessRefreshToken = async (userID) => {
   try {
@@ -43,27 +42,27 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Password and Confirm password does't match.");
   }
 
-  const avatarLocalpath = req.files?.avatar[0]?.path;
+  // const avatarLocalpath = req.files?.avatar[0]?.path;
 
-  if (!avatarLocalpath) {
-    throw new ApiError(400, "Avatar is required");
-  }
+  // if (!avatarLocalpath) {
+  //   throw new ApiError(400, "Avatar is required");
+  // }
 
-  const avatar = await uploadOnCloudinary(avatarLocalpath);
+  // const avatar = await uploadOnCloudinary(avatarLocalpath);
 
-  if (!avatar) {
-    throw new ApiError(
-      400,
-      "Something went wrong while uplaoding the Avatar. \n Please try again."
-    );
-  }
+  // if (!avatar) {
+  //   throw new ApiError(
+  //     400,
+  //     "Something went wrong while uplaoding the Avatar. \n Please try again."
+  //   );
+  // }
 
   const user = await User.create({
     fullname,
     username: username.toLowerCase(),
     password,
     email,
-    avatar: avatar.url,
+    // avatar: avatar.url,
   });
 
   const { accessToken, refreshToken } = await generateAccessRefreshToken(
