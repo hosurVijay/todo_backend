@@ -3,6 +3,7 @@ import { ApiError } from "../Utills/apiError.js";
 import { ApiResponse } from "../Utills/apiResponse.js";
 import { User } from "../Models/user.model.js";
 import uploadOnCloudinary from "../Utills/cloudinary.js";
+import { Todo } from "../Models/todo.models.js";
 
 const generateAccessRefreshToken = async (userID) => {
   try {
@@ -83,7 +84,7 @@ const registerUser = asyncHandler(async (req, res) => {
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     sameSite: "Lax",
-    secure: true,
+    secure: false,
     maxAge: 10 * 24 * 60 * 60 * 1000,
   });
 
@@ -126,7 +127,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "Lax",
     maxAge: 10 * 24 * 60 * 60 * 1000,
   });
@@ -151,7 +152,7 @@ const logOutUser = asyncHandler(async (req, res) => {
 
   const option = {
     httpOnly: true,
-    secure: true,
+    secure: false,
   };
 
   return res
@@ -162,9 +163,11 @@ const logOutUser = asyncHandler(async (req, res) => {
 });
 
 const getUser = asyncHandler(async (req, res) => {
+  const user = req.user;
+  const todo = await Todo.find({ owner: user._id });
   return res
     .status(200)
-    .json(new ApiResponse(200, "User fetched successfully", req.user));
+    .json(new ApiResponse(200, "User fetched successfully", { user, todo }));
 });
 
 const updateUserDetails = asyncHandler(async (req, res) => {
